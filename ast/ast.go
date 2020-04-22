@@ -49,3 +49,14 @@ type Identifier struct { // left hand side (variable name)
 
 func (i *Identifier) expressionNode()      {}                         // expression interface
 func (i *Identifier) TokenLiteral() string { return i.Token.Literal } // node interface
+
+// ----------- return statement -----------
+
+// ReturnStatement represents the line `return <expression>`
+type ReturnStatement struct {
+	Token       token.Token // return token
+	ReturnValue Expression
+}
+
+func (rs *ReturnStatement) statementNode()       {}                          // statement interface
+func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal } // node interface

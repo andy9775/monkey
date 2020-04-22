@@ -37,10 +37,7 @@ func (p *Parser) Errors() []string {
 	return p.errors
 }
 
-func (p *Parser) nextToken() {
-	p.currToken = p.peekToken
-	p.peekToken = p.l.NextToken()
-}
+// ---------------- parse program ----------------
 
 // ParseProgram parses the full program
 func (p *Parser) ParseProgram() *ast.Program {
@@ -58,10 +55,14 @@ func (p *Parser) ParseProgram() *ast.Program {
 	return program
 }
 
+// -------------- parse statements --------------
+
 func (p *Parser) parseStatement() ast.Statement {
 	switch p.currToken.Type {
 	case token.LET: // current token is let
 		return p.parseLetStatement()
+	case token.RETURN:
+		return p.parseReturnStatement()
 	default:
 		return nil
 	}
@@ -80,11 +81,29 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		return nil
 	}
 
-	for !p.currTokenIs(token.SEMICOLON) { // keep going till we hit a semi colon
+	for !p.currTokenIs(token.SEMICOLON) { // keep going till we hit a semi colon (skip expression)
 		p.nextToken()
 	}
 
 	return stmt
+}
+
+func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
+	stmt := &ast.ReturnStatement{Token: p.currToken}
+
+	p.nextToken()
+
+	for !p.currTokenIs(token.SEMICOLON) { // skip till end of line
+		p.nextToken()
+	}
+	return stmt
+}
+
+// ----------------- helpers -----------------
+
+func (p *Parser) nextToken() {
+	p.currToken = p.peekToken
+	p.peekToken = p.l.NextToken()
 }
 
 // check if the current token is of specific type
