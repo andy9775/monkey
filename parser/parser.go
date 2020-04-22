@@ -8,6 +8,25 @@ import (
 	"github.com/andy9775/interpreter/token"
 )
 
+// identify the operator precedence from lowest to highest
+// abs value doesn't matter but the relation to one another does
+const (
+	_ int = iota
+	LOWEST
+	EQUALS      // ==
+	LESSGREATER // > or <
+	SUM         // +
+	PRODUCT     // *
+	PREFIX      // -X or !X
+	CALL        // myFunction(X)
+)
+
+// prefix and infix parsing functions for Pratt parser
+type (
+	prefixParseFn func() ast.Expression
+	infixParseFn  func(ast.Expression /* left side of of operator being parsed */) ast.Expression
+)
+
 // Parser handles parsing the given text
 type Parser struct {
 	l *lexer.Lexer
@@ -16,6 +35,9 @@ type Parser struct {
 
 	currToken token.Token
 	peekToken token.Token
+
+	prefixParseFns map[token.TokenType]prefixParseFn
+	infixparseFns  map[token.TokenType]infixParseFn
 }
 
 // New returns a new instance of the parser
@@ -24,6 +46,9 @@ func New(l *lexer.Lexer) *Parser {
 		l:      l,
 		errors: []string{},
 	}
+
+	p.prefixParseFns = make(map[token.TokenType]prefixParseFn)
+	p.registerPrefix(token.IDENT, p.parseIdentifier)
 
 	// read two tokens so curr and peek are set
 	p.nextToken()
@@ -64,8 +89,21 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.RETURN:
 		return p.parseReturnStatement()
 	default:
-		return nil
+		// only have two statements, hence if we don't encounter either, it's an expression
+		return p.parseExpressionStatement()
 	}
+}
+
+func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
+	stmt := &ast.ExpressionStatement{Token: p.currToken}
+
+	stmt.Expression = p.parseExpression(LOWEST)
+
+	if p.peekTokenIs(token.SEMICOLON) { // expression statements have optional semicolons
+		p.nextToken()
+	}
+
+	return stmt
 }
 
 func (p *Parser) parseLetStatement() *ast.LetStatement {
@@ -99,7 +137,33 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	return stmt
 }
 
+// ----------- parse expressions -------------
+
+func (p *Parser) parseExpression(precedence int) ast.Expression {
+	prefix := p.prefixParseFns[p.currToken.Type]
+	if prefix == nil { // not a prefix operator
+		return nil
+	}
+	leftExp := prefix() // parse the prefix operator
+
+	return leftExp
+}
+
+// parseIdentifier returns an expression representing an identifier e.g `let x = 5;`
+// 5 is the expression
+func (p *Parser) parseIdentifier() ast.Expression {
+	return &ast.Identifier{Token: p.currToken, Value: p.currToken.Literal}
+}
+
 // ----------------- helpers -----------------
+
+func (p *Parser) registerPrefix(tokenType token.TokenType, fn prefixParseFn) {
+	p.prefixParseFns[tokenType] = fn
+}
+
+func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
+	p.infixparseFns[tokenType] = fn
+}
 
 func (p *Parser) nextToken() {
 	p.currToken = p.peekToken
