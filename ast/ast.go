@@ -78,7 +78,7 @@ func (ls *LetStatement) String() string {
 
 type Identifier struct { // left hand side (variable name)
 	Token token.Token
-	Value string
+	Value string // name of the identifier
 }
 
 func (i *Identifier) expressionNode()      {}                         // expression interface
@@ -134,3 +134,14 @@ func (es *ExpressionStatement) String() string {
 
 	return ""
 }
+
+// ----------- literals --------------
+
+type IntegerLiteral struct {
+	Token token.Token
+	Value int64 // value of the expression e.g. 5
+}
+
+func (il *IntegerLiteral) expressionNode()      {}
+func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
+func (il *IntegerLiteral) String() string       { return il.Token.Literal }
