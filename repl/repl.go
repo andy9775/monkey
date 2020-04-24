@@ -7,6 +7,7 @@ import (
 
 	"github.com/andy9775/interpreter/evaluator"
 	"github.com/andy9775/interpreter/lexer"
+	"github.com/andy9775/interpreter/object"
 	"github.com/andy9775/interpreter/parser"
 	"github.com/andy9775/interpreter/token"
 )
@@ -17,6 +18,8 @@ const PROMPT = ">> "
 // Start begins the repl loop
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
+	env := object.NewEnvironment()
+
 	for {
 		fmt.Printf(PROMPT)        // print prompt and accept new input
 		scanned := scanner.Scan() // read input
@@ -35,7 +38,7 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		evaluated := evaluator.Eval(program)
+		evaluated := evaluator.Eval(program, env)
 		if evaluated != nil {
 			io.WriteString(out, evaluated.Inspect())
 			io.WriteString(out, "\n")
