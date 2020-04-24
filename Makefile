@@ -9,4 +9,4 @@ test:
 	@go test evaluator/*.go
 
 repl:
-	@go run main.gow
+	@go run main.go
