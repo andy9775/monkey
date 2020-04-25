@@ -79,7 +79,7 @@ func (ls *LetStatement) String() string {
 
 type Identifier struct { // left hand side (variable name)
 	Token token.Token
-	Value string // name of the identifier
+	Value string // name of the identifier e.g. x
 }
 
 func (i *Identifier) expressionNode()      {}                         // expression interface

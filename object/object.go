@@ -6,7 +6,13 @@ We've opted to represent everything as an object (like ruby) making things easie
 */
 package object
 
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+	"strings"
+
+	"github.com/andy9775/interpreter/ast"
+)
 
 type ObjectType string
 
@@ -16,6 +22,7 @@ const (
 	NULL_OBJ         = "NULL"
 	RETURN_VALUE_OBJ = "RETURN_VALUE"
 	ERROR_OBJ        = "ERROR"
+	FUNCTION_OBJ     = "FUNCTION"
 )
 
 // Object is a wrapper interface around the object system for our language.
@@ -70,23 +77,34 @@ type Error struct {
 func (e *Error) Type() ObjectType { return ERROR_OBJ }
 func (e *Error) Inspect() string  { return "ERROR: " + e.Message }
 
-// --------- env ---------
+// ------------- func -------------
 
-func NewEnvironment() *Environment {
-	s := make(map[string]Object)
-	return &Environment{store: s}
+type Function struct {
+	Parameters []*ast.Identifier
+	Body       *ast.BlockStatement
+	/*
+		Each function has it's own environment which allows for closures
+		By default we include the outer environment (which gives the function access to
+		variables in the scope that it is defined)
+	*/
+	Env *Environment
 }
 
-type Environment struct {
-	store map[string]Object
-}
+func (f *Function) Type() ObjectType { return FUNCTION_OBJ }
+func (f *Function) Inspect() string {
+	var out bytes.Buffer
 
-func (e *Environment) Get(name string) (Object, bool) {
-	obj, ok := e.store[name]
-	return obj, ok
-}
+	params := []string{}
+	for _, p := range f.Parameters {
+		params = append(params, p.String())
+	}
 
-func (e *Environment) Set(name string, val Object) Object {
-	e.store[name] = val
-	return val
+	out.WriteString("fn")
+	out.WriteString("(")
+	out.WriteString(strings.Join(params, ", "))
+	out.WriteString(") {\n")
+	out.WriteString(f.Body.String())
+	out.WriteString("\n}")
+
+	return out.String()
 }
