@@ -24,6 +24,8 @@ const (
 	ERROR_OBJ        = "ERROR"
 	FUNCTION_OBJ     = "FUNCTION"
 	STRING_OBJ       = "STRING"
+
+	BUILTIN_OBJ = "BUILTIN"
 )
 
 // Object is a wrapper interface around the object system for our language.
@@ -118,3 +120,14 @@ func (f *Function) Inspect() string {
 
 	return out.String()
 }
+
+// --------- built in funcs ---------
+
+type BuiltinFunction func(args ...Object) Object
+
+type Builtin struct {
+	Fn BuiltinFunction
+}
+
+func (b *Builtin) Type() ObjectType { return BUILTIN_OBJ }
+func (b *Builtin) Inspect() string  { return "builtin function" }
