@@ -20,8 +20,9 @@ const (
 	EOF     = "EOF"     // we've reached the end of the file
 
 	// identifiers + literals
-	IDENT = "IDENT" // add, foobar, x, y
-	INT   = "INT"   // 1,2,3,4,5,....
+	IDENT  = "IDENT" // add, foobar, x, y
+	INT    = "INT"   // 1,2,3,4,5,....
+	STRING = "STRING"
 
 	// operators
 	ASSIGN   = "="
