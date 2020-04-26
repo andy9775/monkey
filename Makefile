@@ -7,6 +7,7 @@ test:
 	@go test parser/*.go
 	@go test ast/*.go
 	@go test evaluator/*.go
+	@go test object/*.go
 
 repl:
 	@go run main.go
