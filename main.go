@@ -18,12 +18,9 @@ func main() {
 	if os.Args[1] == "bench" {
 		input := `
 	let fib = fn(x) {
-		if (x == 0){
+		if (x <= 1){
 			return x;
 		} 
-		if (x == 1){
-			return x;
-		}
 		return fib(x - 1) + fib(x - 2);
 	}
 	puts(fib(30));
@@ -37,7 +34,7 @@ func main() {
 		num := 0
 
 		start := time.Now()
-		for num < 15 { // averages ~1.70 seconds vs python ~0.30 seconds
+		for num < 15 { // averages ~1.50 seconds vs python ~0.30 seconds
 			evaluator.Eval(program, env)
 			num++
 		}

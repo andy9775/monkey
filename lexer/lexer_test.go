@@ -62,6 +62,9 @@ func TestNextToken(t *testing.T) {
 	"foo bar";
 	[1,2];
 	{"foo": "bar"};
+
+	10 <= 9;
+	10 >= 9;
 	`
 
 	l := lexer.New(input)
@@ -170,6 +173,16 @@ func TestNextToken(t *testing.T) {
 		{token.COLON, ":"},
 		{token.STRING, "bar"},
 		{token.RBRACE, "}"},
+		{token.SEMICOLON, ";"},
+
+		{token.INT, "10"},
+		{token.LTE, "<="},
+		{token.INT, "9"},
+		{token.SEMICOLON, ";"},
+
+		{token.INT, "10"},
+		{token.GTE, ">="},
+		{token.INT, "9"},
 		{token.SEMICOLON, ";"},
 
 		{token.EOF, ""},

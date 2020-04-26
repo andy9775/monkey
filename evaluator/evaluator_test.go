@@ -70,6 +70,11 @@ func TestEvalBooleanExpression(t *testing.T) {
 		{"1 > 2", false},
 		{"1 < 1", false},
 		{"1 > 1", false},
+		{"1 >= 1", true},
+		{"1 <= 1", true},
+		{"2 <= 1", false},
+		{"2 >= 1", true},
+		{"1 >= 2", false},
 		{"1 == 1", true},
 		{"1 != 1", false},
 		{"1 == 2", false},
@@ -223,6 +228,7 @@ func TestErrorHandling(t *testing.T) {
 		{"foobar", "identifier not found: foobar"},
 		{`"Hello" - "World"`, "unknown operator: STRING - STRING"},
 		{`{"name": "Monkey"}[fn(x) {x}]`, "unusable as hash key: FUNCTION"},
+		{`10 >= "hello"`, "type mismatch: INTEGER >= STRING"},
 	}
 
 	for _, tt := range tests {
