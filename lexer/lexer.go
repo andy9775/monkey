@@ -81,6 +81,11 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Type = token.EOF
 	default:
 		if isLetter(l.ch) {
+			/*
+				For any contigious series of letter which are parsed, we check to see if they
+				match some keyword identifier (e.g. let, return, if, else, ...). If they do,
+				its considered a keyword, otherwise it's a user defined identifier (x, y, a, b)
+			*/
 			tok.Literal = l.readIdentifier()
 			tok.Type = token.LookupIdent(tok.Literal)
 			return tok
