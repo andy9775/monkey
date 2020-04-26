@@ -1,4 +1,4 @@
-.PHONY: test repl
+.PHONY: test repl bench
 
 all: test
 
@@ -10,4 +10,7 @@ test:
 	@go test object/*.go
 
 repl:
-	@go run main.go
+	@go run main.go repl
+
+bench: 
+	@go run main.go bench
