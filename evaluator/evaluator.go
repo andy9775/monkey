@@ -109,6 +109,16 @@ var builtins = map[string]*object.Builtin{
 			return &object.Array{Elements: newElements}
 		},
 	},
+
+	"puts": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			for _, arg := range args {
+				fmt.Println(arg.Inspect())
+			}
+
+			return NULL
+		},
+	},
 }
 
 // Eval takes in an AST node, determines it's type and returns the
