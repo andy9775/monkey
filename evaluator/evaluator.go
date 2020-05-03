@@ -244,7 +244,8 @@ func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) obje
 		result = Eval(statement, env)
 		/*
 			if we have a nested block statement (with return value), keep passing up the return object
-			till we get to the outermost block statement where it is unwrapped
+			till we get to the outermost block statement where it is unwrapped.
+			If we get a return value, stop evaluating the statements.
 		*/
 		if result != nil {
 			rt := result.Type()
@@ -381,6 +382,9 @@ func isTruthy(obj object.Object) bool {
 	}
 }
 
+// evallIdentifier returns the object associated with the identifier either
+// from the environment or from the built-ins. If there is nothing associated
+// the identifier in the environment or built-ins, it returns an error.
 func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
 
 	if val, ok := env.Get(node.Value); ok {

@@ -155,12 +155,13 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 }
 
 func (p *Parser) parseLetStatement() *ast.LetStatement {
-	stmt := &ast.LetStatement{Token: p.currToken}
+	stmt := &ast.LetStatement{Token: p.currToken} // set the `let` string as the token
 
 	if !p.expectPeek(token.IDENT) { // let identifier - identifier should be next token
 		return nil
 	}
 
+	// Name is an Identifier AST with a token (ident) and a value (name of variable)
 	stmt.Name = &ast.Identifier{Token: p.currToken, Value: p.currToken.Literal}
 
 	if !p.expectPeek(token.ASSIGN) { // let identifier = - next token should be an =
@@ -193,14 +194,16 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 // ----------- parse expressions -------------
 
 func (p *Parser) parseExpression(precedence int) ast.Expression {
+	// only specific token types can be at the start of an expression
 	prefix := p.prefixParseFns[p.currToken.Type]
 	if prefix == nil { // not a prefix operator
 		p.noPrefixParseFnError(p.currToken.Type)
 		return nil
 	}
-	leftExp := prefix() // parse the prefix operator
+	leftExp := prefix() // parse the prefix operator using the specified function
 
 	for !p.peekTokenIs(token.SEMICOLON) && precedence < p.peekPrecedence() {
+		// only specific token types can be in the infix position between other tokens
 		infix := p.infixparseFns[p.peekToken.Type]
 		if infix == nil {
 			return leftExp
