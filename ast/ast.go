@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"strings"
 
-	"github.com/andy9775/interpreter/token"
+	"github.com/andy9775/monkey/token"
 )
 
 // Node is a node in the abstract syntax tree

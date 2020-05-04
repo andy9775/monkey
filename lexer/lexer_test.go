@@ -3,9 +3,9 @@ package lexer_test
 import (
 	"testing"
 
-	"github.com/andy9775/interpreter/lexer"
+	"github.com/andy9775/monkey/lexer"
 
-	"github.com/andy9775/interpreter/token"
+	"github.com/andy9775/monkey/token"
 )
 
 func TestBasicNextToken(t *testing.T) {

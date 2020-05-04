@@ -3,8 +3,8 @@ package evaluator
 import (
 	"fmt"
 
-	"github.com/andy9775/interpreter/ast"
-	"github.com/andy9775/interpreter/object"
+	"github.com/andy9775/monkey/ast"
+	"github.com/andy9775/monkey/object"
 )
 
 // Create a single instance of the following objects as a performence optimization

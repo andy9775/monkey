@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/andy9775/interpreter/evaluator"
-	"github.com/andy9775/interpreter/lexer"
-	"github.com/andy9775/interpreter/object"
-	"github.com/andy9775/interpreter/parser"
-	"github.com/andy9775/interpreter/token"
+	"github.com/andy9775/monkey/evaluator"
+	"github.com/andy9775/monkey/lexer"
+	"github.com/andy9775/monkey/object"
+	"github.com/andy9775/monkey/parser"
+	"github.com/andy9775/monkey/token"
 )
 
 // PROMPT is the text input console prompt

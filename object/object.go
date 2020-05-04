@@ -13,7 +13,7 @@ import (
 
 	"hash/fnv"
 
-	"github.com/andy9775/interpreter/ast"
+	"github.com/andy9775/monkey/ast"
 )
 
 type ObjectType string

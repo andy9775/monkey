@@ -1,6 +1,6 @@
 package lexer
 
-import "github.com/andy9775/interpreter/token"
+import "github.com/andy9775/monkey/token"
 
 // Lexer iterates through the sourcecode and outputs tokens
 type Lexer struct {

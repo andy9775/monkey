@@ -3,9 +3,9 @@ package parser
 import (
 	"fmt"
 
-	"github.com/andy9775/interpreter/ast"
-	"github.com/andy9775/interpreter/lexer"
-	"github.com/andy9775/interpreter/token"
+	"github.com/andy9775/monkey/ast"
+	"github.com/andy9775/monkey/lexer"
+	"github.com/andy9775/monkey/token"
 
 	"strconv"
 )
