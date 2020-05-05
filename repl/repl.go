@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/andy9775/monkey/evaluator"
+	"github.com/andy9775/monkey/compiler"
 	"github.com/andy9775/monkey/lexer"
-	"github.com/andy9775/monkey/object"
 	"github.com/andy9775/monkey/parser"
-	"github.com/andy9775/monkey/token"
+	"github.com/andy9775/monkey/vm"
 )
 
 // PROMPT is the text input console prompt
@@ -18,7 +17,6 @@ const PROMPT = ">> "
 // Start begins the repl loop
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
-	env := object.NewEnvironment()
 
 	for {
 		fmt.Printf(PROMPT)        // print prompt and accept new input
@@ -38,16 +36,23 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		evaluated := evaluator.Eval(program, env)
-		if evaluated != nil {
-			io.WriteString(out, evaluated.Inspect())
-			io.WriteString(out, "\n")
+		comp := compiler.New()
+		err := comp.Compile(program)
+		if err != nil {
+			fmt.Fprintf(out, "Whoops! Compilation failed:\n%s\n", err)
+			continue
 		}
 
-		// parse the tokens from the provided text
-		for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
-			fmt.Printf("%+v\n", tok)
+		machine := vm.New(comp.Bytecode())
+		err = machine.Run()
+		if err != nil {
+			fmt.Fprintf(out, "Whoops! Executing bytecode failed:\n%s\n", err)
+			continue
 		}
+
+		stackTop := machine.StackTop()
+		io.WriteString(out, stackTop.Inspect())
+		io.WriteString(out, "\n")
 	}
 }
 
