@@ -56,6 +56,22 @@ const (
 
 	// OpAdd tells us to pop the top two items off of the vm, add them and put the result back
 	OpAdd
+	OpSub
+	OpMul
+	OpDiv
+
+	// OpTrue tells the Vm to put an object.Boolean onto the stack
+	OpTrue
+	OpFalse
+
+	OpEqual
+	OpNotEqual
+	OpGreaterThan
+
+	// OpPop tells us to simply pop an item off the top of the stack
+	// each expression statement should be followed by it in order
+	// to prevent filling up the stack
+	OpPop
 )
 
 // Definition provides human readable debugging information for a specific OpCode
@@ -66,8 +82,17 @@ type Definition struct {
 
 // definitions tracks the number of bytes an instruction operates on
 var definitions = map[Opcode]*Definition{
-	OpConstant: {"OpConstant", []int{2} /* 2 bytes - unit16*/},
-	OpAdd:      {"OpAdd", []int{} /*takes no operands*/},
+	OpConstant:    {"OpConstant", []int{2} /* 2 bytes - unit16*/},
+	OpAdd:         {"OpAdd", []int{} /*takes no operands*/},
+	OpSub:         {"OpSub", []int{} /*takes no operands*/},
+	OpMul:         {"OpMul", []int{} /*takes no operands*/},
+	OpDiv:         {"OpDiv", []int{} /*takes no operands*/},
+	OpTrue:        {"OpTrue", []int{} /*takes no operands*/},
+	OpFalse:       {"OpFalse", []int{} /*takes no operands*/},
+	OpEqual:       {"OpEqual", []int{} /*takes no operands*/},
+	OpNotEqual:    {"OpNotEqual", []int{} /*takes no operands*/},
+	OpGreaterThan: {"OpGreaterThan", []int{} /*takes no operands*/},
+	OpPop:         {"OpPop", []int{} /*takes no operands*/},
 }
 
 // Lookup returns the Definition for the specific op and an error if none found
