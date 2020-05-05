@@ -68,6 +68,10 @@ const (
 	OpNotEqual
 	OpGreaterThan
 
+	// OpMinus is the prefix `-`` operator
+	OpMinus
+	OpBang
+
 	// OpPop tells us to simply pop an item off the top of the stack
 	// each expression statement should be followed by it in order
 	// to prevent filling up the stack
@@ -92,7 +96,10 @@ var definitions = map[Opcode]*Definition{
 	OpEqual:       {"OpEqual", []int{} /*takes no operands*/},
 	OpNotEqual:    {"OpNotEqual", []int{} /*takes no operands*/},
 	OpGreaterThan: {"OpGreaterThan", []int{} /*takes no operands*/},
-	OpPop:         {"OpPop", []int{} /*takes no operands*/},
+	OpMinus:       {"OpMinus", []int{} /*takes no operands*/},
+	OpBang:        {"OpBang", []int{} /*takes no operands*/},
+
+	OpPop: {"OpPop", []int{} /*takes no operands*/},
 }
 
 // Lookup returns the Definition for the specific op and an error if none found
