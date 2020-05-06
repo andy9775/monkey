@@ -72,6 +72,14 @@ const (
 	OpMinus
 	OpBang
 
+	// OpJumpNotTruthy jumps if the previous instruction was false
+	OpJumpNotTruthy
+	// OpJump jumps no matter what
+	OpJump
+
+	// OpNull puts a Null value on the stack
+	OpNull
+
 	// OpPop tells us to simply pop an item off the top of the stack
 	// each expression statement should be followed by it in order
 	// to prevent filling up the stack
@@ -86,18 +94,25 @@ type Definition struct {
 
 // definitions tracks the number of bytes an instruction operates on
 var definitions = map[Opcode]*Definition{
-	OpConstant:    {"OpConstant", []int{2} /* 2 bytes - unit16*/},
-	OpAdd:         {"OpAdd", []int{} /*takes no operands*/},
-	OpSub:         {"OpSub", []int{} /*takes no operands*/},
-	OpMul:         {"OpMul", []int{} /*takes no operands*/},
-	OpDiv:         {"OpDiv", []int{} /*takes no operands*/},
+	OpConstant: {"OpConstant", []int{2} /* 2 bytes - unit16*/},
+	OpAdd:      {"OpAdd", []int{} /*takes no operands*/},
+	OpSub:      {"OpSub", []int{} /*takes no operands*/},
+	OpMul:      {"OpMul", []int{} /*takes no operands*/},
+	OpDiv:      {"OpDiv", []int{} /*takes no operands*/},
+
 	OpTrue:        {"OpTrue", []int{} /*takes no operands*/},
 	OpFalse:       {"OpFalse", []int{} /*takes no operands*/},
 	OpEqual:       {"OpEqual", []int{} /*takes no operands*/},
 	OpNotEqual:    {"OpNotEqual", []int{} /*takes no operands*/},
 	OpGreaterThan: {"OpGreaterThan", []int{} /*takes no operands*/},
-	OpMinus:       {"OpMinus", []int{} /*takes no operands*/},
-	OpBang:        {"OpBang", []int{} /*takes no operands*/},
+
+	OpMinus: {"OpMinus", []int{} /*takes no operands*/},
+	OpBang:  {"OpBang", []int{} /*takes no operands*/},
+
+	OpJumpNotTruthy: {"OpJumpNotTruthy", []int{2} /*single operand is the offset instruction*/},
+	OpJump:          {"OpJump", []int{2} /*single operand is the offset instruction*/},
+
+	OpNull: {"OpNull", []int{}},
 
 	OpPop: {"OpPop", []int{} /*takes no operands*/},
 }
