@@ -80,6 +80,10 @@ const (
 	// OpNull puts a Null value on the stack
 	OpNull
 
+	// OpGetGlobal is used to set identifiers to values
+	OpGetGlobal
+	OpSetGlobal
+
 	// OpPop tells us to simply pop an item off the top of the stack
 	// each expression statement should be followed by it in order
 	// to prevent filling up the stack
@@ -111,6 +115,9 @@ var definitions = map[Opcode]*Definition{
 
 	OpJumpNotTruthy: {"OpJumpNotTruthy", []int{2} /*single operand is the offset instruction*/},
 	OpJump:          {"OpJump", []int{2} /*single operand is the offset instruction*/},
+
+	OpGetGlobal: {"OpGetGlobal", []int{2} /*single operand is the global reference location*/},
+	OpSetGlobal: {"OpSetGlobal", []int{2} /*single operand is the global reference location*/},
 
 	OpNull: {"OpNull", []int{}},
 

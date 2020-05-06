@@ -7,6 +7,7 @@ import (
 
 	"github.com/andy9775/monkey/compiler"
 	"github.com/andy9775/monkey/lexer"
+	"github.com/andy9775/monkey/object"
 	"github.com/andy9775/monkey/parser"
 	"github.com/andy9775/monkey/vm"
 )
@@ -17,6 +18,10 @@ const PROMPT = ">> "
 // Start begins the repl loop
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
+
+	constants := []object.Object{}
+	globals := make([]object.Object, vm.GlobalsSize)
+	symbolTable := compiler.NewSymbolTable()
 
 	for {
 		fmt.Printf(PROMPT)        // print prompt and accept new input
@@ -36,14 +41,17 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		comp := compiler.New()
+		comp := compiler.NewWithState(symbolTable, constants)
 		err := comp.Compile(program)
 		if err != nil {
 			fmt.Fprintf(out, "Whoops! Compilation failed:\n%s\n", err)
 			continue
 		}
 
-		machine := vm.New(comp.Bytecode())
+		code := comp.Bytecode()
+		constants = code.Constants
+
+		machine := vm.NewWithGlobalStore(code, globals)
 		err = machine.Run()
 		if err != nil {
 			fmt.Fprintf(out, "Whoops! Executing bytecode failed:\n%s\n", err)
