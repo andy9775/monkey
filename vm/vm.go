@@ -137,9 +137,36 @@ func (vm *VM) Run() error {
 			if err != nil {
 				return err
 			}
+
+		case code.OpArray:
+			numElements := int(code.ReadUint16(vm.instructions[ip+1:]))
+			ip += 2
+
+			array := vm.buildArray(vm.sp-numElements, vm.sp) // object.Array
+
+			// reset the stack pointer to ignore the individual objects on the stack
+			vm.sp = vm.sp - numElements
+
+			// add the new array object to the stack
+			err := vm.push(array)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
+}
+
+// buildArray iterates through the stack elements associated with the array and adds them
+// to a new object.Array object.
+func (vm *VM) buildArray(startIndex, endIndex int) object.Object {
+	elements := make([]object.Object, endIndex-startIndex)
+
+	for i := startIndex; i < endIndex; i++ {
+		elements[i-startIndex] = vm.stack[i]
+	}
+
+	return &object.Array{Elements: elements}
 }
 
 func (vm *VM) executeMinusOperator() error {

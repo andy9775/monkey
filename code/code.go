@@ -84,6 +84,9 @@ const (
 	OpGetGlobal
 	OpSetGlobal
 
+	// OpArray tells the vm how to build an array
+	OpArray
+
 	// OpPop tells us to simply pop an item off the top of the stack
 	// each expression statement should be followed by it in order
 	// to prevent filling up the stack
@@ -118,6 +121,8 @@ var definitions = map[Opcode]*Definition{
 
 	OpGetGlobal: {"OpGetGlobal", []int{2} /*single operand is the global reference location*/},
 	OpSetGlobal: {"OpSetGlobal", []int{2} /*single operand is the global reference location*/},
+
+	OpArray: {"OpArray", []int{2} /*single operand which specifies the number of elements in the array*/},
 
 	OpNull: {"OpNull", []int{}},
 
