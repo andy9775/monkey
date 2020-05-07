@@ -87,6 +87,9 @@ const (
 	// OpArray tells the vm how to build an array
 	OpArray
 
+	// OpHash tells the compiler and vm to handle a dictionary (hash)
+	OpHash
+
 	// OpPop tells us to simply pop an item off the top of the stack
 	// each expression statement should be followed by it in order
 	// to prevent filling up the stack
@@ -123,6 +126,7 @@ var definitions = map[Opcode]*Definition{
 	OpSetGlobal: {"OpSetGlobal", []int{2} /*single operand is the global reference location*/},
 
 	OpArray: {"OpArray", []int{2} /*single operand which specifies the number of elements in the array*/},
+	OpHash:  {"OpHash", []int{2} /*single operand specifies the number of keys/value sitting on the stack*/},
 
 	OpNull: {"OpNull", []int{}},
 
