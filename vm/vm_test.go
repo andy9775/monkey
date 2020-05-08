@@ -12,6 +12,23 @@ import (
 	"github.com/andy9775/monkey/vm"
 )
 
+func TestIndexExpressions(t *testing.T) {
+	tests := []vmTestCase{
+		{"[1, 2, 3][1]", 2},
+		{"[1, 2, 3][0 + 2]", 3},
+		{"[[1, 1, 1]][0][0]", 1},
+		{"[][0]", vm.Null},
+		{"[1, 2, 3][99]", vm.Null},
+		{"[1][-1]", vm.Null},
+		{"{1: 1, 2: 2}[1]", 1},
+		{"{1: 1, 2: 2}[2]", 2},
+		{"{1: 1}[0]", vm.Null},
+		{"{}[0]", vm.Null},
+	}
+
+	runVmTests(t, tests)
+}
+
 func TestHashLiterals(t *testing.T) {
 	tests := []vmTestCase{
 		{
