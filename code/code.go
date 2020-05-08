@@ -93,6 +93,14 @@ const (
 	// OpIndex allows us to get an element from an array or hash by index
 	OpIndex
 
+	// OpCall is used to execute a function call
+	OpCall
+
+	//OpReturnValue tells the vm to return from a function with a return value
+	OpReturnValue
+	// OpReturn tells the vm to return with nothing on the stack - go back to where you were
+	OpReturn
+
 	// OpPop tells us to simply pop an item off the top of the stack
 	// each expression statement should be followed by it in order
 	// to prevent filling up the stack
@@ -131,6 +139,10 @@ var definitions = map[Opcode]*Definition{
 	OpArray: {"OpArray", []int{2} /*single operand which specifies the number of elements in the array*/},
 	OpHash:  {"OpHash", []int{2} /*single operand specifies the number of keys/value sitting on the stack*/},
 	OpIndex: {"OpIndex", []int{} /*no operands; requires 2 items on stack: the data structure and index*/},
+
+	OpCall:        {"OpCall", []int{} /*no operands; previous item on stack is the identifier for the call*/},
+	OpReturnValue: {"OpReturnValue", []int{} /*no operands; returned value sits at the top of the stack*/},
+	OpReturn:      {"OpReturn", []int{} /*no operands; no return value, just null*/},
 
 	OpNull: {"OpNull", []int{}},
 

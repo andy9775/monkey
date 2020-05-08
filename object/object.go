@@ -14,19 +14,21 @@ import (
 	"hash/fnv"
 
 	"github.com/andy9775/monkey/ast"
+	"github.com/andy9775/monkey/code"
 )
 
 type ObjectType string
 
 const (
-	INTEGER_OBJ      ObjectType = "INTEGER"
-	BOOLEAN_OBJ                 = "BOOLEAN"
-	NULL_OBJ                    = "NULL"
-	RETURN_VALUE_OBJ            = "RETURN_VALUE"
-	ERROR_OBJ                   = "ERROR"
-	FUNCTION_OBJ                = "FUNCTION"
-	STRING_OBJ                  = "STRING"
-	ARRAY_OBJ                   = "ARRAY"
+	INTEGER_OBJ           ObjectType = "INTEGER"
+	BOOLEAN_OBJ                      = "BOOLEAN"
+	NULL_OBJ                         = "NULL"
+	RETURN_VALUE_OBJ                 = "RETURN_VALUE"
+	ERROR_OBJ                        = "ERROR"
+	FUNCTION_OBJ                     = "FUNCTION"
+	COMPILED_FUNCTION_OBJ            = "COMPILED_FUNCTION_OBJ"
+	STRING_OBJ                       = "STRING"
+	ARRAY_OBJ                        = "ARRAY"
 
 	BUILTIN_OBJ = "BUILTIN"
 
@@ -124,6 +126,17 @@ func (f *Function) Inspect() string {
 	out.WriteString("\n}")
 
 	return out.String()
+}
+
+//CompiledFunction contains a series of instructions which make up a function body
+// it is used for the vm/compiler
+type CompiledFunction struct {
+	Instructions code.Instructions
+}
+
+func (cf *CompiledFunction) Type() ObjectType { return COMPILED_FUNCTION_OBJ }
+func (cf *CompiledFunction) Inspect() string {
+	return fmt.Sprintf("CompiledFunction[%p]", cf)
 }
 
 // --------- built in funcs ---------

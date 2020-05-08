@@ -177,7 +177,7 @@ func (vm *VM) Run() error {
 		}
 	}
 	return nil
-}
+}  
 
 func (vm *VM) executeIndexExpression(left, index object.Object) error {
 	switch {
