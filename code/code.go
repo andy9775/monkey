@@ -88,6 +88,9 @@ const (
 	OpGetLocal
 	OpSetLocal
 
+	// OpGetBuiltin gets a builtin function from the builtin function scope
+	OpGetBuiltin
+
 	// OpArray tells the vm how to build an array
 	OpArray
 
@@ -153,6 +156,8 @@ var definitions = map[Opcode]*Definition{
 		"OpCall",
 		[]int{1}, /*operand is number of arguments; previous item on stack is the identifier for the call*/
 	},
+
+	OpGetBuiltin: {"OpGetBuiltin", []int{1} /*operand is the index of the called builtin*/},
 
 	OpReturnValue: {"OpReturnValue", []int{} /*no operands; returned value sits at the top of the stack*/},
 	OpReturn:      {"OpReturn", []int{} /*no operands; no return value, just null*/},

@@ -39,13 +39,19 @@ func New() *Compiler {
 		previousInstruction: EmittedInstruction{},
 	}
 
+	// add the builtin functions
+	symbolTable := NewSymbolTable()
+	for i, v := range object.Builtins {
+		symbolTable.DefineBuiltin(i, v.Name)
+	}
+
 	return &Compiler{
 		constants: []object.Object{},
 
 		scopes:     []CompilationScope{mainScope},
 		scopeIndex: 0,
 
-		symbolTable: NewSymbolTable(),
+		symbolTable: symbolTable,
 	}
 }
 
@@ -222,12 +228,8 @@ func (c *Compiler) Compile(node ast.Node) error {
 			return fmt.Errorf("undefined variable %s", node.Value)
 		}
 
-		// get a variable scopeed locally or globally
-		if symbol.Scope == GlobalScope {
-			c.emit(code.OpGetGlobal, symbol.Index)
-		} else {
-			c.emit(code.OpGetLocal, symbol.Index)
-		}
+		// get a variable scopeed locally or globally, or in the builtins
+		c.loadSymbol(symbol)
 
 	case *ast.StringLiteral:
 		str := &object.String{Value: node.Value}
@@ -338,6 +340,20 @@ func (c *Compiler) Compile(node ast.Node) error {
 	}
 
 	return nil
+}
+
+// loadSymbol emits a bytecode instruction telling the vm to either load a symbol (by identifier)
+// from global or local scope, or from the given builtins. This allows for locally scoped variables
+// to overwrite global ones, and for global function calls to work in locally scoped functions.
+func (c *Compiler) loadSymbol(s Symbol) {
+	switch s.Scope {
+	case GlobalScope:
+		c.emit(code.OpGetGlobal, s.Index)
+	case LocalScope:
+		c.emit(code.OpGetLocal, s.Index)
+	case BuiltinScope:
+		c.emit(code.OpGetBuiltin, s.Index)
+	}
 }
 
 func (c *Compiler) enterScope() {
