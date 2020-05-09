@@ -132,6 +132,8 @@ func (f *Function) Inspect() string {
 // it is used for the vm/compiler
 type CompiledFunction struct {
 	Instructions code.Instructions
+	// NumLocals specifies the number of locally scope variables this function uses
+	NumLocals int
 }
 
 func (cf *CompiledFunction) Type() ObjectType { return COMPILED_FUNCTION_OBJ }
