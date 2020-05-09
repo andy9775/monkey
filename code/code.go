@@ -149,7 +149,11 @@ var definitions = map[Opcode]*Definition{
 	OpHash:  {"OpHash", []int{2} /*single operand specifies the number of keys/value sitting on the stack*/},
 	OpIndex: {"OpIndex", []int{} /*no operands; requires 2 items on stack: the data structure and index*/},
 
-	OpCall:        {"OpCall", []int{} /*no operands; previous item on stack is the identifier for the call*/},
+	OpCall: {
+		"OpCall",
+		[]int{1}, /*operand is number of arguments; previous item on stack is the identifier for the call*/
+	},
+
 	OpReturnValue: {"OpReturnValue", []int{} /*no operands; returned value sits at the top of the stack*/},
 	OpReturn:      {"OpReturn", []int{} /*no operands; no return value, just null*/},
 

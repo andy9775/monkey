@@ -134,6 +134,9 @@ type CompiledFunction struct {
 	Instructions code.Instructions
 	// NumLocals specifies the number of locally scope variables this function uses
 	NumLocals int
+
+	// NumParameters specifies how many arguments this function expects
+	NumParameters int
 }
 
 func (cf *CompiledFunction) Type() ObjectType { return COMPILED_FUNCTION_OBJ }

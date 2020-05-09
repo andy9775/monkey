@@ -200,20 +200,13 @@ func (vm *VM) Run() error {
 			// alone. By placing the fn onto the new frame, the next execution cycle
 			// runs the functions instructions.
 
-			// function callis the previous item on the stack
-			fn, ok := vm.stack[vm.sp-1].(*object.CompiledFunction)
-			if !ok {
-				return fmt.Errorf("calling non-function")
+			numArgs := code.ReadUint8(ins[ip+1:])
+			vm.currentFrame().ip++
+
+			err := vm.callFunction(int(numArgs))
+			if err != nil {
+				return err
 			}
-
-			frame := NewFrame(fn, vm.sp) // where the new frames stack pointer starts
-			vm.pushFrame(frame)
-
-			// set aside space on the stack for local variables
-			// the function call adds variables from vm.sp up to
-			// (vm.sp + fn.NumLocals) when executing
-			// normal usage of the stack won't affect this space
-			vm.sp = frame.basePointer + fn.NumLocals
 
 		case code.OpSetLocal:
 			// setting a local variable places it in the call stack, but inside the
@@ -257,6 +250,29 @@ func (vm *VM) Run() error {
 			}
 		}
 	}
+	return nil
+}
+func (vm *VM) callFunction(numArgs int) error {
+	// function call is the previous item on the stack
+	fn, ok := vm.stack[vm.sp-1-numArgs].(*object.CompiledFunction)
+	if !ok {
+		return fmt.Errorf("calling non-function")
+	}
+
+	if numArgs != fn.NumParameters {
+		return fmt.Errorf("wrong number of arguments: want=%d, got=%d",
+			fn.NumParameters, numArgs)
+	}
+
+	frame := NewFrame(fn, vm.sp-numArgs) // where the new frames stack pointer starts (account for args)
+	vm.pushFrame(frame)
+
+	// set aside space on the stack for local variables
+	// the function call adds variables from vm.sp up to
+	// (vm.sp + fn.NumLocals) when executing
+	// normal usage of the stack won't affect this space
+	vm.sp = frame.basePointer + fn.NumLocals
+
 	return nil
 }
 
