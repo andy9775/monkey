@@ -2,6 +2,7 @@ package ast
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 
 	"github.com/andy9775/monkey/token"
@@ -262,6 +263,7 @@ type FunctionLiteral struct {
 	Token      token.Token     // the fn token
 	Parameters []*Identifier   // the list of function parameters (simple identifiers)
 	Body       *BlockStatement // the body of a function is just a block
+	Name       string
 }
 
 func (fl *FunctionLiteral) expressionNode()      {}
@@ -275,6 +277,9 @@ func (fl *FunctionLiteral) String() string {
 	}
 
 	out.WriteString(fl.TokenLiteral())
+	if fl.Name != "" {
+		out.WriteString(fmt.Sprintf("<%s>", fl.Name))
+	}
 	out.WriteString("(")
 	out.WriteString(strings.Join(params, ", "))
 	out.WriteString(") ")

@@ -3,9 +3,11 @@ package compiler
 type SymbolScope string
 
 const (
-	GlobalScope  SymbolScope = "GLOBAL"
-	LocalScope   SymbolScope = "LOCAL"
-	BuiltinScope SymbolScope = "BUILTIN"
+	GlobalScope   SymbolScope = "GLOBAL"
+	LocalScope    SymbolScope = "LOCAL"
+	BuiltinScope  SymbolScope = "BUILTIN"
+	FreeScope     SymbolScope = "FREE"
+	FunctionScope SymbolScope = "FUNCTION"
 )
 
 type Symbol struct {
@@ -19,6 +21,8 @@ type SymbolTable struct {
 
 	store          map[string]Symbol // name of definition to Symbol mapping
 	numDefinitions int
+
+	FreeSymbols []Symbol
 }
 
 func NewEnclosedSymbolTable(outer *SymbolTable) *SymbolTable {
@@ -29,7 +33,8 @@ func NewEnclosedSymbolTable(outer *SymbolTable) *SymbolTable {
 
 func NewSymbolTable() *SymbolTable {
 	s := make(map[string]Symbol)
-	return &SymbolTable{store: s}
+	free := []Symbol{}
+	return &SymbolTable{store: s, FreeSymbols: free}
 }
 
 func (s *SymbolTable) Define(name string) Symbol {
@@ -51,12 +56,44 @@ func (s *SymbolTable) DefineBuiltin(index int, name string) Symbol {
 	return symbol
 }
 
+// DefineFunctionName defines a function within the function scope
+func (s *SymbolTable) DefineFunctionName(name string) Symbol {
+	symbol := Symbol{
+		Name:  name,
+		Index: 0, // arbitrary index
+		Scope: FunctionScope,
+	}
+	s.store[name] = symbol
+
+	return symbol
+}
+
+func (s *SymbolTable) defineFree(original Symbol) Symbol {
+	s.FreeSymbols = append(s.FreeSymbols, original)
+
+	symbol := Symbol{Name: original.Name, Index: len(s.FreeSymbols) - 1}
+	symbol.Scope = FreeScope
+
+	s.store[original.Name] = symbol
+	return symbol
+}
+
 func (s *SymbolTable) Resolve(name string) (Symbol, bool) {
 	obj, ok := s.store[name]
 	if !ok && s.Outer != nil {
 		// can't find in current (nested) scope, check outerscope
-		obj, ok = s.Outer.Resolve(name)
-		return obj, ok
+		obj, ok = s.Outer.Resolve(name) // walk through scopes
+		if !ok {
+			return obj, ok
+		}
+
+		if obj.Scope == GlobalScope || obj.Scope == BuiltinScope {
+			return obj, ok
+		}
+
+		// free symbol, obj found and not global or builtin
+		free := s.defineFree((obj))
+		return free, true
 	}
 
 	return obj, ok

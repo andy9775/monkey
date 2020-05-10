@@ -42,6 +42,8 @@ func (ins Instructions) fmtInstruction(def *Definition, operands []int) string {
 		return def.Name
 	case 1:
 		return fmt.Sprintf("%s %d", def.Name, operands[0])
+	case 2:
+		return fmt.Sprintf("%s %d %d", def.Name, operands[0], operands[1])
 	}
 
 	return fmt.Sprintf("ERROR: unhandled operandCount for %s\n", def.Name)
@@ -91,6 +93,9 @@ const (
 	// OpGetBuiltin gets a builtin function from the builtin function scope
 	OpGetBuiltin
 
+	// OpGetFree tells the vm to get a free variable
+	OpGetFree
+
 	// OpArray tells the vm how to build an array
 	OpArray
 
@@ -103,6 +108,9 @@ const (
 	// OpCall is used to execute a function call
 	OpCall
 
+	// OpCurrentClosure instructs the compiler/vm to correctly treat nested closures (not as free variables)
+	OpCurrentClosure
+
 	//OpReturnValue tells the vm to return from a function with a return value
 	OpReturnValue
 	// OpReturn tells the vm to return with nothing on the stack - go back to where you were
@@ -112,6 +120,9 @@ const (
 	// each expression statement should be followed by it in order
 	// to prevent filling up the stack
 	OpPop
+
+	// OpClosure tells the vm to wrap the object.CompiledFunction in an object.Closure
+	OpClosure
 )
 
 // Definition provides human readable debugging information for a specific OpCode
@@ -148,6 +159,8 @@ var definitions = map[Opcode]*Definition{
 	OpGetLocal: {"OpGetLocal", []int{1} /*single operand is the local reference location*/},
 	OpSetLocal: {"OpSetLocal", []int{1} /*single operand is the local reference location*/},
 
+	OpGetFree: {"OpGetFree", []int{1} /*single operand specifies location*/},
+
 	OpArray: {"OpArray", []int{2} /*single operand which specifies the number of elements in the array*/},
 	OpHash:  {"OpHash", []int{2} /*single operand specifies the number of keys/value sitting on the stack*/},
 	OpIndex: {"OpIndex", []int{} /*no operands; requires 2 items on stack: the data structure and index*/},
@@ -157,6 +170,8 @@ var definitions = map[Opcode]*Definition{
 		[]int{1}, /*operand is number of arguments; previous item on stack is the identifier for the call*/
 	},
 
+	OpCurrentClosure: {"OpCurrentClosure", []int{}},
+
 	OpGetBuiltin: {"OpGetBuiltin", []int{1} /*operand is the index of the called builtin*/},
 
 	OpReturnValue: {"OpReturnValue", []int{} /*no operands; returned value sits at the top of the stack*/},
@@ -165,6 +180,8 @@ var definitions = map[Opcode]*Definition{
 	OpNull: {"OpNull", []int{}},
 
 	OpPop: {"OpPop", []int{} /*takes no operands*/},
+
+	OpClosure: {"OpClosure", []int{2, 1} /*first operand is constant index, second is num free variables*/},
 }
 
 // Lookup returns the Definition for the specific op and an error if none found

@@ -171,6 +171,11 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 
 	stmt.Value = p.parseExpression(LOWEST) // after assignment we have an expression
 
+	// if the assignment is to a function literal, set the Name field
+	if fl, ok := stmt.Value.(*ast.FunctionLiteral); ok {
+		fl.Name = stmt.Name.Value
+	}
+
 	if p.peekTokenIs(token.SEMICOLON) { // semicolons are optional
 		p.nextToken()
 	}
